@@ -41,7 +41,6 @@ def both_ends(s):
   else :
     return s[0:2] + s[-2:]
 
-
 # C. fix_start
 # Given a string s, return a string
 # where all occurences of its first char have
@@ -54,7 +53,6 @@ def both_ends(s):
 def fix_start(s):
   return s[0] + s[1:].replace(s[0],'*')
 
-
 # D. MixUp
 # Given strings a and b, return a single string with a and b separated
 # by a space '<a> <b>', except swap the first 2 chars of each string.
@@ -64,7 +62,6 @@ def fix_start(s):
 # Assume a and b are length 2 or more.
 def mix_up(a, b):
   return b[:2] + a[2:] + ' ' + a[:2] + b[2:]
-
 
 # Provided simple test() function used in main() to print
 # what each function returns vs. what it's supposed to return.
