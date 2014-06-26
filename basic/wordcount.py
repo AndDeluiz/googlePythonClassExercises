@@ -39,13 +39,42 @@ print_words() and print_top().
 
 import sys
 
-# +++your code here+++
 # Define print_words(filename) and print_top(filename) functions.
 # You could write a helper utility function that reads a file
 # and builds and returns a word/count dict for it.
 # Then print_words() and print_top() can just call the utility function.
 
-###
+def print_words(filename):
+  vWordCount = splitFileLines(filename)
+
+  for vKey in sorted(vWordCount.keys()):
+    print vKey, vWordCount[vKey]
+
+def print_top(filename):
+  vWordCount = splitFileLines(filename)
+
+  # Reverse sort vWordCount dict by values and return first 20 items
+  for vTuple in sorted(vWordCount.items(), reverse=True, key=getDictValue)[:20]:
+    print vTuple[0], vTuple[1]
+
+# Return dict value used to sort output in print_top()
+def getDictValue(tuple):
+  return tuple[1]
+
+# Load all words in file filename into a dict (vWordCount), couting each one of them.
+def splitFileLines(filename):
+  vFile = open(filename, 'rU')
+  vWordCount = {}
+
+  for vLine in vFile:
+    for vWord in vLine.split():
+      vWord = vWord.lower()
+      if vWord in vWordCount:
+        vWordCount[vWord] = vWordCount[vWord] + 1
+      else:
+        vWordCount[vWord] = 1
+
+  return vWordCount
 
 # This basic command line argument parsing code is provided and
 # calls the print_words() and print_top() functions which you must define.
