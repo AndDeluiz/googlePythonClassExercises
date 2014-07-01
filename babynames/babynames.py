@@ -40,9 +40,30 @@ def extract_names(filename):
   followed by the name-rank strings in alphabetical order.
   ['2006', 'Aaliyah 91', Aaron 57', 'Abagail 895', ' ...]
   """
-  # +++your code here+++
-  return
+  vNameRank = []
 
+  try:
+    vFile = open(filename,"rU")
+  except IOError:
+    print >> sys.stderr, "ERROR: file %s doesn't exist or doesn't have read permission!" % filename
+    sys.exit(1)
+
+  for vLine in vFile:
+    # vMatch = re.search(r"<h3\s+.*>.*([0-9]{4})</h3>", vLine)
+    vMatch = re.search(r'Popularity\sin\s(\d\d\d\d)', vLine)
+    if vMatch:
+      vRankYear = vMatch.group(1)
+    else:
+      # vMatch = re.search(r"<tr\s.*>([0-9]+)</td><td>([A-z]+)</td><td>([A-z]+)", vLine)
+      vMatch = re.search(r'<td>(\d+)</td><td>(\w+)</td>\<td>(\w+)</td>', vLine)
+      if vMatch:
+        vNameRank.append(vMatch.group(2) + " " + vMatch.group(1))
+        vNameRank.append(vMatch.group(3) + " " + vMatch.group(1))
+  vNameRank.sort()
+  vNameRank.insert(0,vRankYear)
+
+  vFile.close()
+  return vNameRank
 
 def main():
   # This command-line parsing code is provided.
@@ -60,9 +81,19 @@ def main():
     summary = True
     del args[0]
 
-  # +++your code here+++
   # For each filename, get the names, then either print the text output
   # or write it to a summary file
+  while len(args) > 0:
+    vNameRank = extract_names(args[0])
+    if vNameRank:
+      if not summary:
+        print vNameRank
+      else:
+        vFileOut = open(args[0] + '.summary', "w")
+        for vLine in vNameRank:
+          vFileOut.write(vLine + '\n')
+        vFileOut.close()
+    del args[0]
   
 if __name__ == '__main__':
   main()
