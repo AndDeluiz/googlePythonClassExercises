@@ -74,6 +74,7 @@ def splitFileLines(filename):
       else:
         vWordCount[vWord] = 1
 
+  vFile.close()
   return vWordCount
 
 # This basic command line argument parsing code is provided and
