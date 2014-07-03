@@ -30,6 +30,7 @@ def read_urls(filename):
     strText = fpInputLogFile.read()
   except IOError:
     print >> sys.stderr, "ERROR: file %s doesn't exist or doesn't have read permission!" % filename
+    fpInputLogFile.close()
     sys.exit(1)
 
   # Extracts domain from file name
@@ -49,6 +50,7 @@ def read_urls(filename):
     if strUrl not in listMatchUrl:
       listMatchUrl.append(strUrl)
 
+  fpInputLogFile.close()
   return listMatchUrl
   
 def download_images(img_urls, dest_dir):
@@ -59,8 +61,37 @@ def download_images(img_urls, dest_dir):
   with an img tag to show each local image file.
   Creates the directory if necessary.
   """
-  # +++your code here+++
-  
+
+  # Check if dest_dir exists and creates if not
+  if not os.access(dest_dir, os.F_OK):
+    os.makedirs(dest_dir)
+
+  # Retrieve images and copy to dest_dir
+  intIndex = 0
+  listImgFile = []
+  for strImgUrl in img_urls:
+    sys.stdout.write("Retieving " + strImgUrl + " to " + dest_dir + "/img" + str(intIndex) + " ...")
+    try:
+      urllib.urlretrieve(strImgUrl, dest_dir + "/img" + str(intIndex))
+      listImgFile.append('img' + str(intIndex))
+      sys.stdout.write("OK\n")
+    except IOError:
+      sys.stdout.write("FAIL\n")
+    intIndex = intIndex + 1
+
+  # Create index.html file in the directory specified by dest_dir
+  strFileName = dest_dir + "/index.html"
+  strImageRef = ''
+  try:
+    fpIndexHtml = open(strFileName, 'w')
+    fpIndexHtml.write("<verbatim>\n<html>\n<body>)\n")
+    for strFile in listImgFile:
+      strImageRef = strImageRef + '<img src="' + strFile + '">'
+    fpIndexHtml.write(strImageRef + '\n')
+    fpIndexHtml.write("</html>\n</body>)\n")
+    fpIndexHtml.close()
+  except IOError:
+    sys.stderr.write("ERROR: Error writing to " + strFileName + " file!")
 
 def main():
   args = sys.argv[1:]
