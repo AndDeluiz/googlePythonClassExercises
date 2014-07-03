@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python -tt
 # Copyright 2010 Google Inc.
 # Licensed under the Apache License, Version 2.0
 # http://www.apache.org/licenses/LICENSE-2.0
@@ -24,9 +24,33 @@ def read_urls(filename):
   extracting the hostname from the filename itself.
   Screens out duplicate urls and returns the urls sorted into
   increasing order."""
-  # +++your code here+++
-  
 
+  try:
+    fpInputLogFile = open(filename, 'rU')
+    strText = fpInputLogFile.read()
+  except IOError:
+    print >> sys.stderr, "ERROR: file %s doesn't exist or doesn't have read permission!" % filename
+    sys.exit(1)
+
+  # Extracts domain from file name
+  strWebsite = 'http://' + filename.split('_')[1]
+
+  listAux = []
+  # Search for URL image string inside file. findall() loads entire file at once.
+  for tuple in re.findall("GET\s(\S*puzzle\S*)\s", strText):
+    listAux.append(strWebsite + tuple)
+
+  # Sort URL list
+  listAux.sort()
+
+  # Remove duplicates from URL list
+  listMatchUrl = []
+  for strUrl in listAux:
+    if strUrl not in listMatchUrl:
+      listMatchUrl.append(strUrl)
+
+  return listMatchUrl
+  
 def download_images(img_urls, dest_dir):
   """Given the urls already in the correct order, downloads
   each image into the given directory.
