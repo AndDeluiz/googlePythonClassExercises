@@ -18,6 +18,14 @@ Here's what a puzzle url looks like:
 10.254.254.28 - - [06/Aug/2007:00:13:48 -0700] "GET /~foo/puzzle-bar-aaab.jpg HTTP/1.0" 302 528 "-" "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.6) Gecko/20070725 Firefox/2.0.0.6"
 """
 
+def sortUrl(url):
+  """Return second wordchar (yyyy) as key for sorting if pattern "-xxxx-yyyy.zzz" is present.
+  Otherwise returns url."""
+  match = re.search(r'-(\w+)-(\w+)\.\w+', url)
+  if match:
+    return match.group(2)
+  else:
+    return url
 
 def read_urls(filename):
   """Returns a list of the puzzle urls from the given log file,
@@ -36,22 +44,14 @@ def read_urls(filename):
   # Extracts domain from file name
   strWebsite = 'http://' + filename.split('_')[1]
 
-  listAux = []
+  dictUrl = {}
   # Search for URL image string inside file. findall() loads entire file at once.
-  for tuple in re.findall("GET\s(\S*puzzle\S*)\s", strText):
-    listAux.append(strWebsite + tuple)
-
-  # Sort URL list
-  listAux.sort()
-
-  # Remove duplicates from URL list
-  listMatchUrl = []
-  for strUrl in listAux:
-    if strUrl not in listMatchUrl:
-      listMatchUrl.append(strUrl)
+  for tuple in re.findall("GET (\S+)", strText):
+    if 'puzzle' in tuple:
+      dictUrl[strWebsite + tuple] = 1
 
   fpInputLogFile.close()
-  return listMatchUrl
+  return sorted(dictUrl.keys(), key=sortUrl)
   
 def download_images(img_urls, dest_dir):
   """Given the urls already in the correct order, downloads
